@@ -3,7 +3,7 @@
 	/**
 	 * File config/connection.php chứa thông tin connect của mysql
 	 */
-	include 'config/connection.php';
+	include 'class/DBController.php';
 	session_start();
 	
 	//Kiểm tra sự tồn tại session tài khoản
@@ -15,8 +15,8 @@
 	//Nếu người dùng click nút đăng nhập
 	if(isset($_POST['btnSubmit'])){
 		$taikhoan = $_POST['taikhoan'];
-		$sql = "SELECT MatKhau FROM canbo WHERE TaiKhoan =  '$taikhoan'";
-		$result = $conn->query($sql);
+		$sql = "SELECT TenCB, MatKhau FROM canbo WHERE TaiKhoan =  '$taikhoan'";
+		$result = DBController::customQuery($sql);
 		
 		//Kiểm tra số dòng lớn hơn 0 thì tiếp tục
 		if($result->num_rows > 0){
@@ -30,9 +30,10 @@
 				$matkhau = $_POST['matkhau'];
 			}
 			//Xác nhận mật khẩu
-			if($matkhau === $row['MatKhau'] || $_COOKIE['MatKhau']){
+			if($matkhau === $row['MatKhau']]){
 				//Đặt session
 				$_SESSION['taikhoan'] = $taikhoan;
+				$_SESSION['ten'] = $row['TenCB'];
 
 				//setcookie
 				if(isset($_POST['chbox'])){

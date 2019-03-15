@@ -36,6 +36,12 @@ Class CanBo{
         $this->gioChuan = $gioChuan;
     }
 
+    /**
+     * Phương thức create trên cơ sở dữ liệu
+     * Để sử dụng vui lòng xem lớp DBController 
+     * @return giá trị chuỗi sql
+     */
+
     function create(){
         $sql = "INSERT INTO canbo VALUES('$this->maCB', '$this->tenCB', '$this->taikhoan', '$this->matkhau', '$this->gioChuan')";
         return $sql;
