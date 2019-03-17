@@ -30,7 +30,7 @@
 				$matkhau = $_POST['matkhau'];
 			}
 			//Xác nhận mật khẩu
-			if($matkhau === $row['MatKhau']]){
+			if($matkhau === $row['MatKhau']){
 				//Đặt session
 				$_SESSION['taikhoan'] = $taikhoan;
 				$_SESSION['ten'] = $row['TenCB'];
@@ -55,63 +55,85 @@
 		return preg_match('/^[a-f0-9]{32}$/', $md5);
 	}
 ?>
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
-
 <!DOCTYPE html>
-<html>
-<head>
-	<title>Login Page</title>
-   <!--Made with love by Mutiullah Samim -->
-   
-	<!--Bootsrap 4 CDN-->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    
-    <!--Fontawesome CDN-->
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<html lang="en">
 
-	<!--Custom styles-->
-	<link rel="stylesheet" type="text/css" href="assets/css/now-ui-login.css">
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Hệ thống CUSC</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+
 </head>
-<body>
-<div class="container">
-	<div class="d-flex justify-content-center h-100">
-		<div class="card">
-			<div class="card-header">
-				<h3>Đăng nhập</h3>
-			</div>
-			<div class="card-body">
-				<form action="" method="post">
-					<div class="input-group form-group">
-						<div class="input-group-prepend">
-							<span class="input-group-text"><i class="fas fa-user"></i></span>
-						</div>
-						<input name="taikhoan" type="text" class="form-control" placeholder="Tài khoản" value="<? if(isset($_COOKIE['taikhoan'])) echo $_COOKIE['taikhoan'] ?>">
-						
-					</div>
-					<div class="input-group form-group">
-						<div class="input-group-prepend">
-							<span class="input-group-text"><i class="fas fa-key"></i></span>
-						</div>
-						<input name="matkhau" type="password" class="form-control" placeholder="Mật Khẩu" value="<? if(isset($_COOKIE['matkhau'])) echo $_COOKIE['matkhau'] ?>">
-					</div>
-					<div class="row align-items-center remember">
-						<input name="chbox" type="checkbox" <? if(isset($_COOKIE['taikhoan'])) echo 'checked' ?> value="on"> Ghi nhớ tài khoản và mật khẩu
-					</div>
-					<div class="form-group">
-						<input name="btnSubmit" type="submit" value="Đăng nhập" class="btn float-right login_btn">
-					</div>
-				</form>
-			</div>
-			<div class="card-footer">
-				<div class="d-flex justify-content-center links">
-                    © 2019, Developed by <a href="https://aptech.cusc.vn">CUSC</a>
+
+<body class="bg-gradient-primary">
+
+  <div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+      <div class="col-xl-10 col-lg-12 col-md-9">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+              <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+              <div class="col-lg-6">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">Đăng Nhập Hệ Thống</h1>
+                  </div>
+                  <form class="user" action="" method="post">
+                    <div class="form-group">
+                      <input name="taikhoan" type="text" class="form-control form-control-user" id="username" aria-describedby="usernameHelp" placeholder="Nhập tài khoản">
+                    </div>
+                    <div class="form-group">
+                      <input name="matkhau" type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Mật Khẩu">
+                    </div>
+                    <div class="form-group">
+                      <div class="custom-control custom-checkbox small">
+                        <input type="checkbox" class="custom-control-input" id="customCheck">
+                        <label name="chbox" class="custom-control-label" for="customCheck">Ghi nhớ tài khoản và mật khẩu</label>
+                      </div>
+                    </div>
+                    <input type="submit" name="btnSubmit" value="Đăng nhập" class="btn btn-primary btn-user btn-block">
+                  </form>
+                  <hr>
                 </div>
-			</div>
-		</div>
-	</div>
-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="assets/js/sb-admin-2.min.js"></script>
+
 </body>
+
 </html>
