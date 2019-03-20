@@ -25,21 +25,31 @@
   <script src='vendor/fullcalendar/packages/core/main.js'></script>
   <script src='vendor/fullcalendar/packages/interaction/main.js'></script>
   <script src='vendor/fullcalendar/packages/daygrid/main.js'></script>
+  <script src='vendor/fullcalendar/packages/core/locales-all.js'></script>
 
   <script>
 
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
   var calendarEl = document.getElementById('calendar');
+  var initialLocaleCode = 'vi';
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
     plugins: [ 'interaction', 'dayGrid' ],
     header: {
-      left: 'prevYear,prev,next,nextYear today',
+      left: 'prev,next today',
       center: 'title',
       right: 'dayGridMonth,dayGridWeek,dayGridDay'
     },
-    lang: 'vi',
-    defaultDate: '2019-03-12',
+    locale: initialLocaleCode,
+    dateClick: function(info) {
+      $('#popupCalendar').on('show.bs.modal', function (event) {
+      var date = info.dateStr;
+      var modal = $(this);
+      modal.find('.modal-title').text(date);
+      modal.find('#ngay').val(date);
+      });
+      $('#popupCalendar').modal();
+    },
     navLinks: true, // can click day/week names to navigate views
     editable: true,
     eventLimit: true, // allow "more" link when too many events
@@ -385,15 +395,15 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="container-fluid">
           <div class="row">
             <div class="col-12">
-            <div class="card shadow mb-4">
-              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                Lịch nghỉ bù
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  Lịch nghỉ bù
+                </div>
+                <div class="card-body">
+                  <div id='calendar'></div>
+                </div>
               </div>
-              <div class="card-body">
-              <div id='calendar'></div>
-              </div>
-            </div>
-            
+
             </div>
           </div>
         </div>
@@ -441,7 +451,46 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
   </div>
-
+  <!-- Calendar Modal -->
+  <div id="popupCalendar" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cập nhật lịch nghỉ bù</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form>
+        <div class="modal-body">
+            <div class="form-group">
+              <label for="inputAddress">Từ</label>
+              <input type="text" name="timebatdau" class="form-control" id="inputAddress" placeholder="1234 Main St">
+            </div>
+            <div class="form-group">
+              <label for="inputAddress2">Đến</label>
+              <input type="text" name="timeketthuc" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+            </div>
+            <div class="form-group">
+              <label for="inputAddress2">Lý Do
+              </label>
+              <input type="text" name="lydo" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+            </div>
+            <div class="form-group">
+              <label for="inputAddress2">Ngày
+              </label>
+              <input name="ngay" type="text" class="form-control" id="ngay" readonly>
+            </div>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
