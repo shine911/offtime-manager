@@ -20,12 +20,37 @@
   <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
   <? session_start(); ?>
 
-  <!-- TUI -->
-  <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
-  <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css">
-  <link rel="stylesheet" type="text/css" href="vendor/tui/tui-calendar.css" />
-  <link rel="stylesheet" type="text/css" href="vendor/tui/css/default.css">
-  <link rel="stylesheet" type="text/css" href="vendor/tui/css/icons.css">
+  <link href='vendor/fullcalendar/packages/core/main.css' rel='stylesheet' />
+  <link href='vendor/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
+  <script src='vendor/fullcalendar/packages/core/main.js'></script>
+  <script src='vendor/fullcalendar/packages/interaction/main.js'></script>
+  <script src='vendor/fullcalendar/packages/daygrid/main.js'></script>
+
+  <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    plugins: [ 'interaction', 'dayGrid' ],
+    header: {
+      left: 'prevYear,prev,next,nextYear today',
+      center: 'title',
+      right: 'dayGridMonth,dayGridWeek,dayGridDay'
+    },
+    lang: 'vi',
+    defaultDate: '2019-03-12',
+    navLinks: true, // can click day/week names to navigate views
+    editable: true,
+    eventLimit: true, // allow "more" link when too many events
+    events: [
+    ]
+  });
+  calendar.setOption('locale', 'vi');
+  calendar.render();
+});
+
+</script>
 </head>
 
 <body id="page-top">
@@ -359,161 +384,73 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
           <div class="row">
-            <div class="col-12">              <div class="code-html">
-                <div id="menu">
-                  <span id="menu-navi">
-                    <button type="button" class="btn btn-default btn-sm move-today" data-action="move-today">Today</button>
-                    <button type="button" class="btn btn-default btn-sm move-day" data-action="move-prev">
-                      <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm move-day" data-action="move-next">
-                      <i class="calendar-icon ic-arrow-line-right" data-action="move-next"></i>
-                    </button>
-                  </span>
-                  <span id="renderRange" class="render-range"></span>
-                </div>
-
-                <div id="calendar" style="height: 800 px;"></div>
-              </div></div>
-          </div>
-          <!-- /.container-fluid -->
-
-        </div>
-        <!-- End of Main Content -->
-
-        <!-- Footer -->
-        <footer class="sticky-footer bg-white">
-          <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-              <span>Copyright &copy; Your Website 2019</span>
+            <div class="col-12">
+            <div class="card shadow mb-4">
+              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                Lịch nghỉ bù
+              </div>
+              <div class="card-body">
+              <div id='calendar'></div>
+              </div>
+            </div>
+            
             </div>
           </div>
-        </footer>
-        <!-- End of Footer -->
+        </div>
+        <!-- /.container-fluid -->
 
       </div>
-      <!-- End of Content Wrapper -->
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+      <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright &copy; Your Website 2019</span>
+          </div>
+        </div>
+      </footer>
+      <!-- End of Footer -->
 
     </div>
-    <!-- End of Page Wrapper -->
+    <!-- End of Content Wrapper -->
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-      <i class="fas fa-angle-up"></i>
-    </a>
+  </div>
+  <!-- End of Page Wrapper -->
 
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-            <a class="btn btn-primary" href="login.html">Logout</a>
-          </div>
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Logout Modal-->
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="login.html">Logout</a>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-    <!-- Custom scripts for all pages-->
-    <script src="assets/js/sb-admin-2.js"></script>
-
-    <!-- TUI -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-      crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.min.js"></script>
-    <script type="text/javascript" src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>
-    <script type="text/javascript" src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
-    <script src="vendor/tui/tui-calendar.js"></script>
-    <script src="vendor/tui/js/data/calendars.js"></script>
-    <script src="vendor/tui/js/data/schedules.js"></script>
-    <script type="text/javascript" class="code-js">
-      // register templates
-      const templates = {
-        popupIsAllDay: function () {
-          return 'All Day';
-        },
-        popupStateFree: function () {
-          return 'Free';
-        },
-        popupStateBusy: function () {
-          return 'Busy';
-        },
-        titlePlaceholder: function () {
-          return 'Subject';
-        },
-        locationPlaceholder: function () {
-          return 'Location';
-        },
-        startDatePlaceholder: function () {
-          return 'Start date';
-        },
-        endDatePlaceholder: function () {
-          return 'End date';
-        },
-        popupSave: function () {
-          return 'Save';
-        },
-        popupUpdate: function () {
-          return 'Update';
-        },
-        popupDetailDate: function (isAllDay, start, end) {
-          var isSameDate = moment(start).isSame(end);
-          var endFormat = (isSameDate ? '' : 'YYYY.MM.DD ') + 'hh:mm a';
-
-          if (isAllDay) {
-            return moment(start).format('YYYY.MM.DD') + (isSameDate ? '' : ' - ' + moment(end).format('YYYY.MM.DD'));
-          }
-
-          return (moment(start).format('YYYY.MM.DD hh:mm a') + ' - ' + moment(end).format(endFormat));
-        },
-        popupDetailLocation: function (schedule) {
-          return 'Location : ' + schedule.location;
-        },
-        popupDetailUser: function (schedule) {
-          return 'User : ' + (schedule.attendees || []).join(', ');
-        },
-        popupDetailState: function (schedule) {
-          return 'State : ' + schedule.state || 'Busy';
-        },
-        popupDetailRepeat: function (schedule) {
-          return 'Repeat : ' + schedule.recurrenceRule;
-        },
-        popupDetailBody: function (schedule) {
-          return 'Body : ' + schedule.body;
-        },
-        popupEdit: function () {
-          return 'Edit';
-        },
-        popupDelete: function () {
-          return 'Delete';
-        }
-      };
-
-      var cal = new tui.Calendar('#calendar', {
-        defaultView: 'day',
-        template: templates,
-        useCreationPopup: true,
-        useDetailPopup: true
-      });
-    </script>
-    <script src="vendor/tui/js/default.js"></script>
+  <!-- Custom scripts for all pages-->
+  <script src="assets/js/sb-admin-2.js"></script>
 </body>
 
 </html>
