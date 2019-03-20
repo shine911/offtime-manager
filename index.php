@@ -21,10 +21,14 @@
   <? session_start(); ?>
 
   <link href='vendor/fullcalendar/packages/core/main.css' rel='stylesheet' />
-  <link href='vendor/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
-  <script src='vendor/fullcalendar/packages/core/main.js'></script>
-  <script src='vendor/fullcalendar/packages/interaction/main.js'></script>
-  <script src='vendor/fullcalendar/packages/daygrid/main.js'></script>
+<link href='vendor/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
+<link href='vendor/fullcalendar/packages/timegrid/main.css' rel='stylesheet' />
+<link href='vendor/fullcalendar/packages/list/main.css' rel='stylesheet' />
+<script src='vendor/fullcalendar/packages/core/main.js'></script>
+<script src='vendor/fullcalendar/packages/interaction/main.js'></script>
+<script src='vendor/fullcalendar/packages/daygrid/main.js'></script>
+<script src='vendor/fullcalendar/packages/timegrid/main.js'></script>
+<script src='vendor/fullcalendar/packages/list/main.js'></script>
   <script src='vendor/fullcalendar/packages/core/locales-all.js'></script>
 
   <script>
@@ -34,11 +38,11 @@
   var initialLocaleCode = 'vi';
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
-    plugins: [ 'interaction', 'dayGrid' ],
+    plugins: [ 'dayGrid', 'timeGrid', 'list', 'interaction' ],
     header: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,dayGridWeek,dayGridDay'
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
     },
     locale: initialLocaleCode,
     dateClick: function(info) {
