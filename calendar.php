@@ -1,5 +1,16 @@
 <?php
   session_start();
+  require dirname(__FILE__) . '/class/utils.php';
+  require dirname(__FILE__) . '/class/DBController.php';
+  $taikhoan = $_SESSION["taikhoan"];
+  $sql = "SELECT * FROM nghibu WHERE MaCB = '$taikhoan'";
+  $result = DBController::customQuery($sql);
+  $output_array = array();
+  while($row = $result->fetch_assoc()){
+    $array = array("title"=>$row['LiDo'], "start"=>$row['Tu'], "end"=>$row['Den']);
+    $event = new Event($array, new DateTimeZone('Asia/Ho_Chi_Minh'));
+    $output_array[] = $event->toArray();
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,6 +32,51 @@
 
   <!-- Custom styles for this template-->
   <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+
+  <!-- Fullcalendar IO -->
+  <link href='vendor/fullcalendar/packages/core/main.css' rel='stylesheet' />
+  <link href='vendor/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
+  <link href='vendor/fullcalendar/packages/timegrid/main.css' rel='stylesheet' />
+  <link href='vendor/fullcalendar/packages/list/main.css' rel='stylesheet' />
+  <script src='vendor/fullcalendar/packages/core/main.js'></script>
+  <script src='vendor/fullcalendar/packages/interaction/main.js'></script>
+  <script src='vendor/fullcalendar/packages/daygrid/main.js'></script>
+  <script src='vendor/fullcalendar/packages/timegrid/main.js'></script>
+  <script src='vendor/fullcalendar/packages/list/main.js'></script>
+  <script src='vendor/fullcalendar/packages/core/locales-all.js'></script>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+  var initialLocaleCode = 'vi';
+
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    plugins: [ 'dayGrid', 'timeGrid', 'list', 'interaction' ],
+    header: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+    },
+    locale: initialLocaleCode,
+    dateClick: function(info) {
+      $('#popupCalendar').on('show.bs.modal', function (event) {
+      var date = info.dateStr;
+      var modal = $(this);
+      modal.find('.modal-title').text(date);
+      modal.find('#ngay').val(date);
+      });
+      $('#popupCalendar').modal();
+    },
+    navLinks: true, // can click day/week names to navigate views
+    editable: true,
+    eventLimit: true, // allow "more" link when too many events
+    events: <?php echo json_encode($output_array, JSON_UNESCAPED_UNICODE) ?>
+  });
+  calendar.setOption('locale', 'vi');
+  calendar.render();
+});
+</script>
 </head>
 
 <body id="page-top">
@@ -43,7 +99,7 @@
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - Dashboard -->
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="index.html">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
@@ -58,7 +114,7 @@
       </div>
 
       <!-- Nav Item - Calendar -->
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" href="calendar.php">
           <i class="fas fa-fw fa-calendar"></i>
           <span>Calendar</span></a>
@@ -112,7 +168,7 @@
                 </a>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
+                  Thoát
                 </a>
               </div>
             </li>
@@ -128,10 +184,10 @@
             <div class="col-12">
               <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  Dashboard
+                  Lịch nghỉ bù
                 </div>
                 <div class="card-body">
-                  Index view Dashboard
+                  <div id='calendar'></div>
                 </div>
               </div>
 
@@ -182,6 +238,55 @@
       </div>
     </div>
   </div>
+  <!-- Calendar Modal -->
+  <div id="popupCalendar" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cập nhật lịch nghỉ bù</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="addEvent.php" method="get">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="time-picker1">Từ</label>
+              <input type="text" name="timebatdau" class="form-control" id="time-picker1" readonly>
+            </div>
+            <div class="form-group">
+              <label for="time-picker2">Đến</label>
+              <input type="text" name="timeketthuc" class="form-control" id="time-picker2" readonly>
+            </div>
+            <div class="form-group">
+              <label for="lydo">Lý Do
+              </label>
+              <input type="text" name="lido" class="form-control" id="lido" placeholder="Có việc bận, bệnh, nghỉ ngơi,...">
+            </div>
+            <div class="form-group">
+              <label for="lop">Lớp
+              </label>
+              <input type="text" name="lop" class="form-control" id="lop" placeholder="CP1796H03">
+            </div>
+            <div class="form-group">
+              <label for="sogio">Số Giờ
+              </label>
+              <input type="text" name="sogio" class="form-control" id="sogio" placeholder="Thời gian bắt đầu - Thời gian kết thúc">
+            </div>
+            <div class="form-group">
+              <label for="ngay">Ngày
+              </label>
+              <input name="ngay" type="text" class="form-control" id="ngay" readonly>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <input type="submit" name="btnSubmit" class="btn btn-primary" value="Lưu thông tin">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -191,6 +296,19 @@
 
   <!-- Custom scripts for all pages-->
   <script src="assets/js/sb-admin-2.js"></script>
+  
+  <!-- Timepicker -->
+  <script src="https://unpkg.com/gijgo@1.9.11/js/gijgo.min.js" type="text/javascript"></script>
+  <link href="https://unpkg.com/gijgo@1.9.11/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+  <!-- endTimePicker -->
+  <script>
+        $('#time-picker1').timepicker({
+            uiLibrary: 'bootstrap4'
+        });
+        $('#time-picker2').timepicker({
+            uiLibrary: 'bootstrap4'
+        });
+  </script>
 </body>
 
 </html>

@@ -4,7 +4,10 @@
 	 * File config/connection.php chứa thông tin connect của mysql
 	 */
 	include 'class/DBController.php';
-	session_start();
+  if(!isset($_SESSION)) 
+  { 
+      session_start(); 
+  } 
 	
 	//Kiểm tra sự tồn tại session tài khoản
 	if(isset($_SESSION['taikhoan']))
@@ -15,7 +18,7 @@
 	//Nếu người dùng click nút đăng nhập
 	if(isset($_POST['btnSubmit'])){
 		$taikhoan = $_POST['taikhoan'];
-		$sql = "SELECT TenCB, MatKhau FROM canbo WHERE TaiKhoan =  '$taikhoan'";
+		$sql = "SELECT MaCB, TenCB, MatKhau FROM canbo WHERE TaiKhoan =  '$taikhoan'";
 		$result = DBController::customQuery($sql);
 		
 		//Kiểm tra số dòng lớn hơn 0 thì tiếp tục
@@ -32,8 +35,8 @@
 			//Xác nhận mật khẩu
 			if($matkhau === $row['MatKhau']){
 				//Đặt session
-				$_SESSION['taikhoan'] = $taikhoan;
-				$_SESSION['ten'] = $row['TenCB'];
+				$_SESSION['taikhoan'] = $row['MaCB'];
+        $_SESSION['ten'] = $row['TenCB'];
 
 				//setcookie
 				if(isset($_POST['chbox'])){

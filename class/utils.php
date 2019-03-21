@@ -111,7 +111,7 @@ class Event {
 function parseDateTime($string, $timeZone=null) {
   $date = new DateTime(
     $string,
-    $timeZone ? $timeZone : new DateTimeZone('UTC')
+    $timeZone ? $timeZone : new DateTimeZone('Asia/Ho_Chi_Minh')
       // Used only when the string is ambiguous.
       // Ignored if string has a timeZone offset in it.
   );

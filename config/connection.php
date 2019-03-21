@@ -18,6 +18,7 @@ Class DBConnect{
                 printf("Loi xay ra %s\n", $mysqli->connect_error);
                 exit();
             }
+            self::$obj->set_charset("utf8");
         }
         return self::$obj;
     }

@@ -168,7 +168,9 @@ be a descendant of the grid when it is being dragged.
 
 .fc-time-grid-event .fc-content {
   overflow: hidden;
-  max-height: 100%; }
+  max-height: 100%;
+  color: white;
+}
 
 .fc-time-grid-event .fc-time,
 .fc-time-grid-event .fc-title {

@@ -8,8 +8,15 @@ Class NghiBu{
     private $SoGio;
     private $IDTuan;
 
-    function __construct()
+    function __construct($MaCB, $Lop, $Tu, $Den, $LiDo, $SoGio, $IDTuan)
     {
+        $this->MaCB = $MaCB;
+        $this->Lop = $Lop;
+        $this->Tu = $Tu;
+        $this->Den = $Den;
+        $this->LiDo = $LiDo;
+        $this->SoGio = $SoGio;
+        $this->IDTuan = $IDTuan;
     }
 
     function create(){

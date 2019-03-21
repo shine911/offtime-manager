@@ -1,6 +1,8 @@
 <?php
 include 'config/connection.php';
 include 'CanBo.php';
+include 'NghiBu.php';
+include 'Tuan.php';
 Class DBController{
     //Phương thức tạo đối tượng trong cơ sở dữ liệu thông qua câu lệnh DBController::create()
     /**
