@@ -8,7 +8,7 @@ Class NghiBu{
     private $SoGio;
     private $IDTuan;
 
-    function __construct($MaCB, $Lop, $Tu, $Den, $LiDo, $SoGio, $IDTuan)
+    function __construct($MaCB, $Lop, $Tu, $Den, $LiDo, $SoGio, $ngay)
     {
         $this->MaCB = $MaCB;
         $this->Lop = $Lop;
@@ -16,14 +16,21 @@ Class NghiBu{
         $this->Den = $Den;
         $this->LiDo = $LiDo;
         $this->SoGio = $SoGio;
-        $this->IDTuan = $IDTuan;
+        $week = $ngay->format('W');
+        $this->IDTuan = new Tuan($ngay->format('Ymd'), $week, $ngay->format('d'), $ngay->format('m'), $ngay->format('Y'));
     }
 
     function create(){
-        $sql = "INSERT INTO nghibu VALUES('$this->maCB', '$this->Lop', '$this->Tu', '$this->Den', '$this->LiDo', '$this->SoGio', '$this->IDTuan')";
+        $id = $this->IDTuan->getID();
+        $sql = "INSERT INTO nghibu VALUES('$this->MaCB', '$this->Lop', '$this->Tu', '$this->Den', '$this->LiDo', '$this->SoGio', '$id')";
         return $sql;
     }
 
+    function update(){
+        $id = $this->IDTuan->getID();
+        $sql = "UPDATE nghibu SET Tu = '$this->Tu', Den = '$this->Den', LiDo = '$this->LiDo' WHERE MaCB = '$this->MaCB' AND IDTuan = '$id'";
+        return $sql;
+    }
     /**
      * Get the value of MaCB
      */ 

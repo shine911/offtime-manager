@@ -7,7 +7,7 @@
   $result = DBController::customQuery($sql);
   $output_array = array();
   while($row = $result->fetch_assoc()){
-    $array = array("title"=>$row['LiDo'], "start"=>$row['Tu'], "end"=>$row['Den']);
+    $array = array("title"=> $row['LiDo']." - ".$row['Lop'], "start"=>$row['Tu'], "end"=>$row['Den']);
     $event = new Event($array, new DateTimeZone('Asia/Ho_Chi_Minh'));
     $output_array[] = $event->toArray();
   }
@@ -32,6 +32,8 @@
 
   <!-- Custom styles for this template-->
   <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/gijgo@1.9.11/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
 
   <!-- Fullcalendar IO -->
   <link href='vendor/fullcalendar/packages/core/main.css' rel='stylesheet' />
@@ -66,6 +68,25 @@
       modal.find('.modal-title').text(date);
       modal.find('#ngay').val(date);
       });
+      $('#popupCalendar').modal();
+    },
+    eventClick: function(info){
+      $('#popupCalendar').on('show.bs.modal', function (event) {
+      var modal = $(this);
+      var objEvent = info.event;
+      var dStart = new Date(objEvent.start);
+      var dEnd = new Date(objEvent.end);
+      var title = dStart.toISOString().slice(0, 10) //Tiêu đề trang 2019-xx-xx
+      var reason = objEvent.title.split(" - "); //Cắt chuỗi title nhận từ server EX: "Bận - CP1796H03" tách thành Bận, CP1796H03
+      modal.find('.modal-title').text(title);
+      modal.find('#ngay').val(title);
+      modal.find("#time-picker1").val(dStart.toLocaleTimeString('en-GB').slice(0,5));
+      modal.find("#time-picker2").val(dEnd.toLocaleTimeString('en-GB').slice(0,5));
+      modal.find("#lido").val(reason[0]); //Truyền lý do từ chuỗi đã cắt
+      modal.find("#lop").val(reason[1]); //Truyền lớp vào chuỗi đã cắt
+      modal.find("#btnSubmit").val("Cập nhật");
+      });
+      
       $('#popupCalendar').modal();
     },
     navLinks: true, // can click day/week names to navigate views
@@ -238,6 +259,7 @@
       </div>
     </div>
   </div>
+
   <!-- Calendar Modal -->
   <div id="popupCalendar" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -259,19 +281,19 @@
               <input type="text" name="timeketthuc" class="form-control" id="time-picker2" readonly>
             </div>
             <div class="form-group">
-              <label for="lydo">Lý Do
+              <label for="lydo">Lí Do <supper>(*)</supper>
               </label>
-              <input type="text" name="lido" class="form-control" id="lido" placeholder="Có việc bận, bệnh, nghỉ ngơi,...">
+              <input type="text" name="lido" class="form-control" id="lido" placeholder="Có việc bận, bệnh, nghỉ ngơi,..." required>
             </div>
             <div class="form-group">
-              <label for="lop">Lớp
+              <label for="lop">Lớp <supper>(*)</supper>
               </label>
-              <input type="text" name="lop" class="form-control" id="lop" placeholder="CP1796H03">
+              <input type="text" name="lop" class="form-control" id="lop" placeholder="CP1796H03" required>
             </div>
             <div class="form-group">
-              <label for="sogio">Số Giờ
+              <label for="sogio">Số Giờ <supper>(*)</supper>
               </label>
-              <input type="text" name="sogio" class="form-control" id="sogio" placeholder="Thời gian bắt đầu - Thời gian kết thúc">
+              <input type="text" name="sogio" class="form-control" id="sogio" placeholder="Thời gian bắt đầu - Thời gian kết thúc" required>
             </div>
             <div class="form-group">
               <label for="ngay">Ngày
@@ -280,7 +302,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <input type="submit" name="btnSubmit" class="btn btn-primary" value="Lưu thông tin">
+            <input type="submit" id="btnSubmit" name="btnSubmit" class="btn btn-primary" value="Lưu thông tin">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
           </div>
         </form>
@@ -299,7 +321,6 @@
   
   <!-- Timepicker -->
   <script src="https://unpkg.com/gijgo@1.9.11/js/gijgo.min.js" type="text/javascript"></script>
-  <link href="https://unpkg.com/gijgo@1.9.11/css/gijgo.min.css" rel="stylesheet" type="text/css" />
   <!-- endTimePicker -->
   <script>
         $('#time-picker1').timepicker({

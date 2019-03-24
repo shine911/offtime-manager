@@ -14,7 +14,16 @@ Class DBController{
     static function create($obj){
         $conn = DBConnect::getInstance();
         if($conn->query($obj->create()) === TRUE){
-            echo "<script>alert('Thêm thành công')</script>";
+            header("Location: calendar.php");
+        } else {
+            echo "<script>alert('Có lỗi xảy ra');</script>";
+        }
+    }
+
+    static function update($obj){
+        $conn = DBConnect::getInstance();
+        if($conn->query($obj->update()) === TRUE){
+            header("Location: calendar.php");
         } else {
             echo "<script>alert('Có lỗi xảy ra')</script>";
         }

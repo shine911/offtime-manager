@@ -2,18 +2,24 @@
 Class Tuan{
     private $ID;
     private $Tuan;
+    private $Ngay;
     private $Thang;
     private $Nam;
 
-    function __construct()
+    function __construct($ID, $Tuan, $Ngay, $Thang, $Nam)
     {
-        
+        $this->ID = $ID;
+        $this->Tuan = $Tuan;
+        $this->Ngay = $Ngay;
+        $this->Thang = $Thang;
+        $this->Nam = $Nam;
     }
 
     function create(){
-        $sql = "INSERT INTO tuan VALUES('$this->ID', '$this->Tuan', '$this->Thang', '$this->Nam')";
+        $sql = "INSERT INTO tuan VALUES('$this->ID', '$this->Tuan', '$this->Ngay', '$this->Thang', '$this->Nam')";
         return $sql;
     }
+
     /**
      * Get the value of ID
      */ 
@@ -90,6 +96,26 @@ Class Tuan{
     public function setNam($Nam)
     {
         $this->Nam = $Nam;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of Ngay
+     */ 
+    public function getNgay()
+    {
+        return $this->Ngay;
+    }
+
+    /**
+     * Set the value of Ngay
+     *
+     * @return  self
+     */ 
+    public function setNgay($Ngay)
+    {
+        $this->Ngay = $Ngay;
 
         return $this;
     }
