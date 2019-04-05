@@ -1,9 +1,20 @@
 <?php
   session_start();
-  if(!isset($_SESSION['taikhoan']))
-	{
-		header('Location: login.php');
-	}
+  require dirname(__FILE__) . '/class/utils.php';
+  require dirname(__FILE__) . '/class/DBController.php';
+  $taikhoan = $_SESSION["taikhoan"];
+  $sql = "SELECT * FROM nghibu, canbo WHERE nghibu.MaCB = canbo.MaCB";
+  $result = DBController::customQuery($sql);
+  $output_array = array();
+  while($row = $result->fetch_assoc()){
+    $miscProp = array("lido" => $row['LiDo'], "lop"=>$row['Lop']);
+    $array = array("title"=> $row['TenCB'], "start"=>$row['Tu'], "end"=>$row['Den'], "properties"=>$miscProp);
+    $event = new Event($array, new DateTimeZone('Asia/Ho_Chi_Minh'));
+    $output_array[] = $event->toArray();
+  }
+  $sql = "SELECT count(*) as Soluong FROM canbo";
+  $soLuongCanBo = DBController::customQuery($sql);
+  $soLuongCanBo = $soLuongCanBo->fetch_assoc()["Soluong"];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,6 +36,63 @@
 
   <!-- Custom styles for this template-->
   <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/gijgo@1.9.11/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
+
+  <!-- Fullcalendar IO -->
+  <link href='vendor/fullcalendar/packages/core/main.css' rel='stylesheet' />
+  <link href='vendor/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
+  <link href='vendor/fullcalendar/packages/timegrid/main.css' rel='stylesheet' />
+  <link href='vendor/fullcalendar/packages/list/main.css' rel='stylesheet' />
+  <script src='vendor/fullcalendar/packages/core/main.js'></script>
+  <script src='vendor/fullcalendar/packages/interaction/main.js'></script>
+  <script src='vendor/fullcalendar/packages/daygrid/main.js'></script>
+  <script src='vendor/fullcalendar/packages/timegrid/main.js'></script>
+  <script src='vendor/fullcalendar/packages/list/main.js'></script>
+  <script src='vendor/fullcalendar/packages/core/locales-all.js'></script>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+  var initialLocaleCode = 'vi';
+
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    plugins: [ 'dayGrid', 'timeGrid', 'list', 'interaction' ],
+    header: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+    },
+    eventClick: function(e){
+      $('#popupCalendar').on('show.bs.modal', function (event) {
+        var event = e.event;
+        var prop = event.extendedProps.properties;
+        var modal = $(this);
+        //Chinh sua chuoi gio de hien thi
+        var dStart = new Date(event.start);
+        var dEnd = new Date(event.end);
+        //Dinh dang hien thi vd: 13:00 - 14:00
+        var thoigian = dStart.toLocaleTimeString('en-GB').slice(0,5) + "-" + dEnd.toLocaleTimeString('en-GB').slice(0,5);
+
+        modal.find("#tenCB").text(event.title);
+        modal.find("#lop").text(prop["lop"]);
+        modal.find("#thoigian").text(thoigian);
+        modal.find("#ngay").text(dStart.toLocaleDateString('vi-VN'));
+      });
+      
+      $('#popupCalendar').modal();
+    },
+    locale: initialLocaleCode,
+    navLinks: true, // can click day/week names to navigate views
+    editable: true,
+    eventLimit: true, // allow "more" link when too many events
+    events: <? echo json_encode($output_array, JSON_UNESCAPED_UNICODE) ?>
+  });
+  calendar.setOption('locale', 'vi');
+  calendar.render();
+});
+</script>
 </head>
 
 <body id="page-top">
@@ -48,9 +116,9 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="/">
+        <a class="nav-link" href="index.php">
           <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span></a>
+          <span>Thống kê</span></a>
       </li>
 
       <!-- Divider -->
@@ -65,7 +133,7 @@
       <li class="nav-item">
         <a class="nav-link" href="calendar.php">
           <i class="fas fa-fw fa-calendar"></i>
-          <span>Calendar</span></a>
+          <span>Sắp xếp lịch</span></a>
       </li>
 
       <!-- Divider -->
@@ -116,7 +184,7 @@
                 </a>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
+                  Thoát
                 </a>
               </div>
             </li>
@@ -132,13 +200,63 @@
             <div class="col-12">
               <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  Dashboard
+                  Lịch nghỉ bù
                 </div>
                 <div class="card-body">
-                  Index view Dashboard
+                  <div id='calendar'></div>
                 </div>
               </div>
-
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  Tổng quan
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-8 font-weight-bold">
+                      Số lượng cán bộ
+                    </div>
+                    <div class="col-4">
+                      <? echo $soLuongCanBo; ?>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-8 font-weight-bold">
+                      Số ngày nghĩ đã được thiết lập:
+                    </div>
+                    <div class="col-4">
+                      <? echo $result->num_rows; ?>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-8 font-weight-bold">
+                      Số Lớp:
+                    </div>
+                    <div class="col-4">
+                      <? echo $result->num_rows; ?>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-8 font-weight-bold">
+                      Số Chương Trình Dạy:
+                    </div>
+                    <div class="col-4">
+                      <? echo $result->num_rows; ?>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-8 font-weight-bold">
+                      Số Loại Hình:
+                    </div>
+                    <div class="col-4">
+                      <? echo $result->num_rows; ?>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -195,6 +313,38 @@
 
   <!-- Custom scripts for all pages-->
   <script src="assets/js/sb-admin-2.js"></script>
+
+    <!-- Calendar Modal -->
+    <div id="popupCalendar" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Thông Tin</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-4"><span class="font-weight-bold">Tên Cán Bộ:</span></div>
+            <div class="col-sm-8"><label id="tenCB">Bành thì tét</label></div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4"><span class="font-weight-bold">Lớp:</span></div>
+            <div class="col-sm-8"><label id="lop">Bành thì tét</label></div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4"><span class="font-weight-bold">Thời gian nghỉ:</span></div>
+            <div class="col-sm-8"><label id="thoigian">Bành thì tét</label></div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4"><span class="font-weight-bold">Ngày nghỉ:</span></div>
+            <div class="col-sm-8"><label id="ngay">Bành thì tét</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

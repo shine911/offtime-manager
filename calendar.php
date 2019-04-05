@@ -123,7 +123,7 @@
       <li class="nav-item">
         <a class="nav-link" href="index.php">
           <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span></a>
+          <span>Thống kê</span></a>
       </li>
 
       <!-- Divider -->
@@ -138,7 +138,7 @@
       <li class="nav-item active">
         <a class="nav-link" href="calendar.php">
           <i class="fas fa-fw fa-calendar"></i>
-          <span>Calendar</span></a>
+          <span>Sắp xếp lịch</span></a>
       </li>
 
       <!-- Divider -->
