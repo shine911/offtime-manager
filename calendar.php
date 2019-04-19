@@ -141,6 +141,18 @@
           <span>Sắp xếp lịch</span></a>
       </li>
 
+      <li class="nav-item">
+          <a class="nav-link" href="phancong.php">
+          <i class="fas fa-fw fa-users"></i>
+          <span>Phân công</span></a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="bangphancong.php">
+          <i class="fas fa-fw fa-table"></i>
+          <span>Bảng phân công</span></a>
+      </li>
+
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
 

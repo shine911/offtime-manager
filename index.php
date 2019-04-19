@@ -1,7 +1,14 @@
 <?php
   session_start();
+//Kiểm tra sự tồn tại session tài khoản
+
   require dirname(__FILE__) . '/class/utils.php';
   require dirname(__FILE__) . '/class/DBController.php';
+  if(!isset($_SESSION['taikhoan']))
+  {
+      header('Location: login.php');
+  }
+
   $taikhoan = $_SESSION["taikhoan"];
   $sql = "SELECT * FROM nghibu, canbo WHERE nghibu.MaCB = canbo.MaCB";
   $result = DBController::customQuery($sql);
@@ -12,9 +19,38 @@
     $event = new Event($array, new DateTimeZone('Asia/Ho_Chi_Minh'));
     $output_array[] = $event->toArray();
   }
+  //số cán bộ
   $sql = "SELECT count(*) as Soluong FROM canbo";
   $soLuongCanBo = DBController::customQuery($sql);
   $soLuongCanBo = $soLuongCanBo->fetch_assoc()["Soluong"];
+
+  //Số chương trình
+  $sql = "SELECT count(*) as SoCT FROM chuongtrinh";
+  $soLuongChuongTrinh = DBController::customQuery($sql);
+  if($temp = $soLuongChuongTrinh->fetch_assoc()){
+    $soLuongChuongTrinh = $temp["SoCT"];
+  }
+
+  //Số lượng môn học
+  $sql = "SELECT count(*) as SoLuongMH FROM monhoc";
+  $soLuongMH = DBController::customQuery($sql);
+  $soLuongMH = $soLuongMH->fetch_assoc()['SoLuongMH'];
+
+  //Số luọng mô hình 
+  $sql = "SELECT count(*) as SoLuong FROM LoaiHinh";
+  $soLH = DBController::customQuery($sql);
+  $soLH = $soLH->fetch_assoc()['SoLuong'];
+
+  //Đóng gói chart
+  $sql = "SELECT SUM(SoTiet) AS tong FROM phancong WHERE Gio = 'G' OR Gio = 'H' OR Gio = 'J' OR Gio = 'K' AND Thang = '2019-04'";
+  $rs = DBController::customQuery($sql);
+  $trongGio = $rs->fetch_assoc();
+  $trongGio = $trongGio['tong'] * 2;
+  $sql = "SELECT SUM(SoTiet) AS tong FROM phancong WHERE Gio = 'F' OR Gio = 'M' AND Thang = '2019-04'";
+  $rs = DBController::customQuery($sql);
+  $ngoaiGio = $rs->fetch_assoc();
+  $ngoaiGio = $ngoaiGio['tong'] * 2;
+  $dataChart = [$trongGio, $ngoaiGio];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -136,6 +172,18 @@
           <span>Sắp xếp lịch</span></a>
       </li>
 
+      <li class="nav-item">
+        <a class="nav-link" href="phancong.php">
+          <i class="fas fa-fw fa-users"></i>
+          <span>Phân công</span></a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="bangphancong.php">
+          <i class="fas fa-fw fa-table"></i>
+          <span>Bảng phân công</span></a>
+      </li>
+      
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
 
@@ -200,7 +248,7 @@
             <div class="col-12">
               <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  Lịch nghỉ bù
+                <h6 class="m-0 font-weight-bold text-primary">Lịch nghỉ bù</h6>
                 </div>
                 <div class="card-body">
                   <div id='calendar'></div>
@@ -212,7 +260,7 @@
             <div class="col-6">
               <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  Tổng quan
+                  <h6 class="m-0 font-weight-bold text-primary">Tổng quan</h6>
                 </div>
                 <div class="card-body">
                   <div class="row">
@@ -233,10 +281,10 @@
                   </div>
                   <div class="row">
                     <div class="col-8 font-weight-bold">
-                      Số Lớp:
+                      Số Loại Hình
                     </div>
                     <div class="col-4">
-                      <? echo $result->num_rows; ?>
+                      <? echo $soLH?>
                     </div>
                   </div>
                   <div class="row">
@@ -244,19 +292,35 @@
                       Số Chương Trình Dạy:
                     </div>
                     <div class="col-4">
-                      <? echo $result->num_rows; ?>
+                      <? echo $soLuongChuongTrinh ?>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-8 font-weight-bold">
-                      Số Loại Hình:
+                      Số Môn Học:
                     </div>
                     <div class="col-4">
-                      <? echo $result->num_rows; ?>
+                      <? echo $soLuongMH ?>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="col-6">
+              <!-- Bar Chart -->
+              <div class="card shadow mb-4">
+                  <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Số Giờ Học Trong Tháng</h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-bar">
+                      <canvas id="myBarChart"></canvas>
+                    </div>
+                    <hr>
+                    <p> Trong giờ là: G, H, J, K</p>
+                    <p> Ngoài giờ là: F, M </p>
+                  </div>
+                </div>
             </div>
           </div>
         </div>
@@ -313,7 +377,110 @@
 
   <!-- Custom scripts for all pages-->
   <script src="assets/js/sb-admin-2.js"></script>
+  
+  <!-- Page level plugins -->
+  <script src="vendor/chart.js/Chart.min.js"></script>
+  <script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#858796';
 
+    function number_format(number, decimals, dec_point, thousands_sep) {
+    // *     example: number_format(1234.56, 2, ',', ' ');
+    // *     return: '1 234,56'
+    number = (number + '').replace(',', '').replace(' ', '');
+    var n = !isFinite(+number) ? 0 : +number,
+        prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+        sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+        dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+        s = '',
+        toFixedFix = function(n, prec) {
+        var k = Math.pow(10, prec);
+        return '' + Math.round(n * k) / k;
+        };
+    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+    s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+    if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+    }
+    if ((s[1] || '').length < prec) {
+        s[1] = s[1] || '';
+        s[1] += new Array(prec - s[1].length + 1).join('0');
+    }
+    return s.join(dec);
+    }
+
+    // Bar Chart Example
+    var ctx = document.getElementById("myBarChart");
+    var myBarChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ["Trong Giờ", "Ngoài Giờ"],
+        datasets: [{
+        label: "Tổng số giờ",
+        backgroundColor: "#4e73df",
+        hoverBackgroundColor: "#2e59d9",
+        borderColor: "#4e73df",
+        data: <? echo json_encode($dataChart) ?>,
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        layout: {
+        padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+        }
+        },
+        scales: {
+        xAxes: [{
+            gridLines: {
+            display: false,
+            drawBorder: false
+            },
+            ticks: {
+            maxTicksLimit: 6
+            },
+            maxBarThickness: 25,
+        }],
+        yAxes: [{
+            ticks: {
+            min: 0,
+            max: <? echo $trongGio + $ngoaiGio ?>,
+            maxTicksLimit: 5,
+            padding: 10
+            },
+            gridLines: {
+            color: "rgb(234, 236, 244)",
+            zeroLineColor: "rgb(234, 236, 244)",
+            drawBorder: false,
+            borderDash: [2],
+            zeroLineBorderDash: [2]
+            }
+        }],
+        },
+        legend: {
+        display: false
+        },
+        tooltips: {
+        titleMarginBottom: 10,
+        titleFontColor: '#6e707e',
+        titleFontSize: 14,
+        backgroundColor: "rgb(255,255,255)",
+        bodyFontColor: "#858796",
+        borderColor: '#dddfeb',
+        borderWidth: 1,
+        xPadding: 15,
+        yPadding: 15,
+        displayColors: false,
+        caretPadding: 10
+        },
+    }
+    });
+    </script>
+  
     <!-- Calendar Modal -->
     <div id="popupCalendar" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -327,19 +494,19 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-sm-4"><span class="font-weight-bold">Tên Cán Bộ:</span></div>
-            <div class="col-sm-8"><label id="tenCB">Bành thì tét</label></div>
+            <div class="col-sm-8"><label id="tenCB"></label></div>
           </div>
           <div class="row">
             <div class="col-sm-4"><span class="font-weight-bold">Lớp:</span></div>
-            <div class="col-sm-8"><label id="lop">Bành thì tét</label></div>
+            <div class="col-sm-8"><label id="lop"></label></div>
           </div>
           <div class="row">
             <div class="col-sm-4"><span class="font-weight-bold">Thời gian nghỉ:</span></div>
-            <div class="col-sm-8"><label id="thoigian">Bành thì tét</label></div>
+            <div class="col-sm-8"><label id="thoigian"></label></div>
           </div>
           <div class="row">
             <div class="col-sm-4"><span class="font-weight-bold">Ngày nghỉ:</span></div>
-            <div class="col-sm-8"><label id="ngay">Bành thì tét</label></div>
+            <div class="col-sm-8"><label id="ngay"></label></div>
           </div>
         </div>
       </div>

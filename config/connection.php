@@ -3,7 +3,7 @@ Class DBConnect{
     private static $host = "localhost";
     private static $user = "root";
     private static $pwd = "";
-    private static $db = "php";
+    private static $db = "fxampp";
     private static $obj = null;
 
     private function __construct()
