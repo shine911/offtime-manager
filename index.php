@@ -46,7 +46,8 @@
   $rs = DBController::customQuery($sql);
   $trongGio = $rs->fetch_assoc();
   $trongGio = $trongGio['tong'] * 2;
-  $sql = "SELECT SUM(SoTiet) AS tong FROM phancong WHERE Gio = 'F' OR Gio = 'M' AND Thang = '2019-04'";
+  $thang = date('Y-m');
+  $sql = "SELECT SUM(SoTiet) AS tong FROM phancong WHERE Gio = 'F' OR Gio = 'M' AND Thang = '$thang'";
   $rs = DBController::customQuery($sql);
   $ngoaiGio = $rs->fetch_assoc();
   $ngoaiGio = $ngoaiGio['tong'] * 2;
