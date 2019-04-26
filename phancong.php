@@ -42,15 +42,17 @@
 
     $listCanBo = array();
     $listMonHoc = array();
-    $sql = "SELECT MaCB ,TenCB FROM canbo";
+    $sql = "SELECT MaCB ,TenCB FROM canbo WHERE MaCB <> 'AD001'";
     $result = DBController::customQuery($sql);
     while($row = $result->fetch_assoc()){
-        $listCanBo[$row['MaCB']] = $row['TenCB'];
+        array_push($listCanBo, ['label'=>$row['TenCB'], 'value'=>$row['MaCB'], 'desc'=>'Mã cán bộ: '.$row['MaCB']]);
     }
-    $sql = "SELECT maMH, tenMH FROM monhoc";
+
+    $sql = "SELECT maMH, tenMH, soTiet FROM monhoc";
     $result = DBController::customQuery($sql);
     while($row = $result->fetch_assoc()){
-        $listMonHoc[$row['maMH']] = $row['tenMH'];
+        //$listMonHoc[$row['maMH']] = [$row['tenMH'], $row['soTiet']];
+        $listMonHoc[$row['maMH']] = ['ten' => $row['tenMH'], 'soTiet' => $row['soTiet']];
     }
 ?>
 <!DOCTYPE html>
@@ -74,7 +76,7 @@
 
     <!-- Custom styles for this template-->
     <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
 
 <body id="page-top">
@@ -96,22 +98,17 @@
                                 <div class="row form-group">
                                     <div class="col-3 col-form-label text-right">Giáo Viên: </div>
                                     <div class="col-8 offset-1">
-                                        <select class="form-control form-control-sm" name="GiaoVien" id="">
-                                            <? foreach($listCanBo as $maCB => $canbo): ?>
-                                            <option value="<? echo $maCB?>">
-                                                <? echo $canbo ?>
-                                            </option>
-                                            <? endforeach; ?>
-                                        </select>
+                                        <input type="text" name="GiaoVien" class="form-control" id="idGiaoVien" hidden>
+                                        <input type="text" class="form-control" id="tenGiaoVien">
                                     </div>
                                 </div>
                                 <div class="row form-group">
                                     <div class="col-3 col-form-label text-right">Môn học: </div>
                                     <div class="col-8 offset-1">
-                                        <select class="form-control form-control-sm" name="MonHoc" id="">
+                                        <select class="form-control form-control-sm" name="MonHoc" id="sltMH">
                                             <? foreach($listMonHoc as $maMH => $monhoc): ?>
                                             <option value="<? echo $maMH?>">
-                                                <? echo $monhoc ?>
+                                                <? echo $monhoc['ten'] ?>
                                             </option>
                                             <? endforeach; ?>
                                         </select>
@@ -142,20 +139,13 @@
                                 <div class="row form-group">
                                     <div class="col-3 col-form-label text-right">Giờ:</div>
                                     <div class="offset-1 col-8">
-                                        <select name="GioHoc" id="GioHoc" class="form-control" <option value="G">G
-                                            </option>
-                                            <option value="H">H</option>
-                                            <option value="J">J</option>
-                                            <option value="K">K</option>
-                                            <option value="F">F</option>
-                                            <option value="M">M</option>
-                                        </select>
+                                        <input class="form-control" type="text" name="trongGio" id="trongGio" disabled>
                                     </div>
                                 </div>
                                 <div class="row form-group">
                                     <div class="col-3 col-form-label text-right">Số Tiết:</div>
                                     <div class="offset-1 col-8">
-                                        <input class="form-control" type="text" name="soTiet" id="soTiet">
+                                        <input class="form-control" type="text" name="soTiet" id="soTiet" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -190,6 +180,33 @@
 
     <!-- Custom scripts for all pages-->
     <script src="assets/js/sb-admin-2.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            var monHocArr = <? echo json_encode($listMonHoc) ?>;
+            var tag = <? echo json_encode($listCanBo) ?>;
+            $('#sltMH').change(function (){
+                var selectedValue = $(this).children('option:selected').val();
+                $('#soTiet').val(monHocArr[selectedValue].soTiet);
+            });
+            $('#tenGiaoVien').autocomplete({
+                source: tag,
+                focus: function( event, ui ) {
+                    $( "#tenGiaoVien" ).val( ui.item.label );
+                    return false;
+                },
+                select: function(event, ui){
+                    $("#idGiaoVien").val(ui.item.value);
+                    return false;
+                }
+            }).autocomplete( "instance" )._renderItem = function( ul, item ) {
+                return $( "<li>" )
+                    .append( "<div>" + item.label + "<br>" + item.desc + "</div>" )
+                    .appendTo( ul );
+                };
+            } );
+    </script>
 </body>
 
 </html>

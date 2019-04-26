@@ -46,36 +46,37 @@
   $soLH = $soLH->fetch_assoc()['SoLuong'];
 
   //Đóng gói chart
-  $sql = "SELECT SUM(SoTiet) AS tong FROM phancong WHERE Gio = 'G' OR Gio = 'H' OR Gio = 'J' OR Gio = 'K' AND Thang = '2019-04' AND MaCB <> 'AD001'";
+  $thang = date('Y-m');
+
+  $sql = "SELECT SUM(monhoc.soTiet) AS tong FROM phancong AS pc, lop, monhoc WHERE monhoc.maMH = pc.maMH AND pc.maLop = lop.maLop AND lop.trongGio = 1 AND Thang = '$thang'";
   $rs = DBController::customQuery($sql);
   $trongGio = $rs->fetch_assoc();
-  $trongGio = $trongGio['tong'] * 2;
-  $thang = date('Y-m');
-  $sql = "SELECT SUM(SoTiet) AS tong FROM phancong WHERE Gio = 'F' OR Gio = 'M' AND Thang = '$thang' AND MaCB <> 'AD001'";
+  $trongGio = $trongGio['tong'];
+  $sql = "SELECT SUM(monhoc.soTiet) AS tong FROM phancong AS pc, lop, monhoc WHERE monhoc.maMH = pc.maMH AND pc.maLop = lop.maLop AND lop.trongGio = 0 AND Thang = '$thang'";
   $rs = DBController::customQuery($sql);
   $ngoaiGio = $rs->fetch_assoc();
-  $ngoaiGio = $ngoaiGio['tong'] * 2;
+  $ngoaiGio = $ngoaiGio['tong'];
   $dataChart = [$trongGio, $ngoaiGio];
 
   //Đóng gói chart cho từng người
   $trongGioSingle = array();
   $ngoaiGioSingle = array();
   foreach($canbo as $key=>$cb){
-    $sql = "SELECT SUM(SoTiet) AS tong FROM phancong WHERE Gio = 'G' OR Gio = 'H' OR Gio = 'J' OR Gio = 'K' AND Thang = '$thang' AND maCB = '$key'";
+    $sql = "SELECT SUM(monhoc.soTiet) AS tong FROM phancong AS pc, lop, monhoc WHERE monhoc.maMH = pc.maMH AND pc.maLop = lop.maLop AND lop.trongGio = 1 AND Thang = '$thang' AND maCB = '$key'";
     $rs = DBController::customQuery($sql);
     $trong = 0;
     $ngoai = 0;
 
     if($rs->num_rows > 0){
       $trong = $rs->fetch_assoc();
-      $trong = $trong['tong'] * 2;
+      $trong = $trong['tong'];
     }
     
-    $sql = "SELECT SUM(SoTiet) AS tong FROM phancong WHERE Gio = 'F' OR Gio = 'M' AND Thang = '$thang' AND maCB = '$key'";
+    $sql = "SELECT SUM(monhoc.soTiet) AS tong FROM phancong AS pc, lop, monhoc WHERE monhoc.maMH = pc.maMH AND pc.maLop = lop.maLop AND lop.trongGio = 0 AND Thang = '$thang' AND maCB = '$key'";
     $rs = DBController::customQuery($sql);
     if($rs->num_rows > 0){
       $ngoai = $rs->fetch_assoc();
-      $ngoai = $ngoai['tong'] * 2;
+      $ngoai = $ngoai['tong'];
     }
     array_push($trongGioSingle, $trong);
     array_push($ngoaiGioSingle, $ngoai);
@@ -182,6 +183,27 @@
       </div>
     </div>
     <div class="row">
+    <div class="col-12">
+        <!-- Bar Chart -->
+        <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Số Giờ Học</h6>
+          </div>
+          <div class="card-body">
+            <div class="chart-bar">
+              <canvas id="singleChart"></canvas>
+            </div>
+            <hr>
+            <p> Trong giờ là: G, H, J, K</p>
+            <p> Ngoài giờ là: F, M </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="row">
+    
       <div class="col-6">
         <div class="card shadow mb-4">
           <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -248,26 +270,6 @@
         </div>
       </div>
     </div>
-
-    <div class="row">
-    <div class="col-12">
-        <!-- Bar Chart -->
-        <div class="card shadow mb-4">
-          <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Số Giờ Học</h6>
-          </div>
-          <div class="card-body">
-            <div class="chart-bar">
-              <canvas id="singleChart"></canvas>
-            </div>
-            <hr>
-            <p> Trong giờ là: G, H, J, K</p>
-            <p> Ngoài giờ là: F, M </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <!-- /.container-fluid -->
 
   </div>
