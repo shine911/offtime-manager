@@ -2,21 +2,23 @@
     session_start();
     require dirname(__FILE__) . '/class/utils.php';
     require dirname(__FILE__) . '/class/DBController.php';
-    
-    if(!isset($_SESSION['taikhoan'])){
-        header('Location: index.php');
+
+    if(isset($_SESSION['taikhoan'])){
+        if($_SESSION['taikhoan']!='AD001'){
+            header('Location: index.php');
+        }
     }
 
-    if(isset($_GET['thang'])){
-        $thang = $_GET['thang'];
-        $sql = "SELECT cb.TenCB, mh.tenMH, pc.TGBatDau, pc.TGKetThuc, pc.Thang, pc.Gio, pc.SoTiet from phancong AS pc, monhoc AS mh, canbo AS cb WHERE pc.MaCB = cb.MaCB AND pc.maMH = mh.maMH AND Thang = '$thang'";
-    } else {
-        $sql = "SELECT cb.TenCB, mh.tenMH, pc.TGBatDau, pc.TGKetThuc, pc.Thang, pc.Gio, pc.SoTiet from phancong AS pc, monhoc AS mh, canbo AS cb WHERE pc.MaCB = cb.MaCB AND pc.maMH = mh.maMH";
+    if(isset($_GET['del']) && $_GET['del']!=''){
+        $sql = "DELETE FROM monhoc WHERE maMH = ?";
+        $conn = DBConnect::getInstance();
+        $prepare = $conn->prepare($sql);
+        $prepare->bind_param('s', $_GET['del']);
+        $prepare->execute();
     }
+    $sql = "SELECT mh.maMH, mh.tenMH, mh.soTiet, ct.tenCT, lh.tenLH  from chuongtrinh AS ct, monhoc AS mh, LoaiHinh AS lh WHERE ct.maCT = mh.maCT AND lh.maLH = ct.maLH";
+
     $result = DBController::customQuery($sql);
-    if($result->num_rows == 0){
-        header('Location: bangphancong.php');
-    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,59 +53,44 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Thông tin bảng phân công</h1>
-                    <form class="form-inline mb-4" action="" method="get">
-                        <div class="form-group mb-2">
-                            <label for="label" class="sr-only">Tháng</label>
-                            <input type="text" readonly class="form-control-plaintext" id="label" value="Tháng">
-                        </div>
-                        <div class="form-group mx-sm-3 mb-2">
-                            <label for="inputMonth" class="sr-only">Password</label>
-                            <input type="month" name="thang" class="form-control" id="inputMonth" value="<? echo isset($_GET['thang'])?$_GET['thang']:date('Y-m') ?>">
-                        </div>
-                        <button id="confirm" type="submit" title="Xác nhận" class="btn btn-primary mb-2"><i class="fas fa-check fa-sm fa-fw"></i></button>
-                        <button id="print" type="button" title="Xuất file" class="btn btn-info ml-2 mb-2"><i class="fas fa-file-excel fa-sm fa-fw"></i></button>
-                    </form>
+                    <h1 class="h3 mb-4 text-gray-800">Thông tin môn học</h1>
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Bảng phân công</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Bảng môn học</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Tên CB</th>
-                                            <th>Môn học</th>
-                                            <th>Từ ngày</th>
-                                            <th>Đến ngày</th>
-                                            <th>Tháng</th>
+                                            <th>Mã Môn</th>
+                                            <th>Tên</th>
+                                            <th>Chương trình</th>
+                                            <th>Loại hình</th>
                                             <th>Số tiết</th>
-                                            <th>Giờ</th>
+                                            <th>Công cụ</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <th>Tên CB</th>
-                                            <th>Môn học</th>
-                                            <th>Từ ngày</th>
-                                            <th>Đến ngày</th>
-                                            <th>Tháng</th>
+                                            <th>Mã Môn</th>
+                                            <th>Tên</th>
+                                            <th>Chương trình</th>
+                                            <th>Loại hình</th>
                                             <th>Số tiết</th>
-                                            <th>Giờ</th>
+                                            <th>Công cụ</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
                                         <? while($row = $result->fetch_assoc()): ?>
                                         <tr>
-                                            <td><? echo $row["TenCB"] ?></td>
+                                            <td><? echo $row["maMH"] ?></td>
                                             <td><? echo $row["tenMH"] ?></td>
-                                            <td><? echo $row["TGBatDau"]?></td>
-                                            <td><? echo $row["TGKetThuc"]?></td>
-                                            <td><? echo $row["Thang"]?></td>
-                                            <td><? echo $row["Gio"]?></td>
-                                            <td><? echo $row["SoTiet"]?></td>
+                                            <td><? echo $row["tenCT"]?></td>
+                                            <td><? echo $row["tenLH"]?></td>
+                                            <td><? echo $row["soTiet"]?></</td>
+                                            <td><a href="?del=<? echo $row["maMH"]; ?>" onclick="return confirm('Xóa môn học?')"><i class="fas fa-trash"></i></a></td>
                                         </tr>
                                         <? endwhile ?>
                                     </tbody>
@@ -145,14 +132,11 @@
             "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Vietnamese.json"
         },
         "columnDefs": [
-                { type: "phoneNumber", targets: 0 }
+                { type: "text", targets: 1 },
+                { targets: 5, orderable: false}
             ]
         });
 
-        $('#print').click(function(){
-            var thang = $('#inputMonth').val();
-            window.location.href = 'export.php?thang='+thang;
-        });
         });
     </script>
 </body>

@@ -11589,9 +11589,10 @@ a:focus {
 }
 
 .bg-login-image {
-  background: url("https://source.unsplash.com/K4mSJ7kc0As/600x800");
+  background: url("https://aptech.cusc.vn/DesktopModules/CMSP/HinhDaiDien2/1/20181031cusc.png");
   background-position: center;
   background-size: cover;
+  margin-left: 2 px;
 }
 
 .bg-register-image {

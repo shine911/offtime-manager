@@ -4,6 +4,9 @@ session_start();
 require dirname(__FILE__) . '/class/utils.php';
 require dirname(__FILE__) . '/class/DBController.php';
 require 'vendor/autoload.php';
+if(!isset($_SESSION['taikhoan'])){
+    header('Location: index.php');
+}
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 

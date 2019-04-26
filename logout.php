@@ -1,4 +1,4 @@
 <?php
     session_start();
     session_destroy();
-    echo "Session is timeout!";
+    header('Location: login.php');

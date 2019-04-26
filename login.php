@@ -46,7 +46,13 @@
 				header('Location: index.php');
 			}
 		}
-		echo "<script>alert('Mật khẩu và tài khoản sai vui lòng thử lại!')</script>";
+		$message = '<div id="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Lỗi!</strong> kiểm tra lại mật khẩu và tài khoản
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>';
+    
 	}
 
 	/**
@@ -98,6 +104,7 @@
                 <div class="p-5">
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Đăng Nhập Hệ Thống</h1>
+                    <? echo isset($message)?$message:''; ?>
                   </div>
                   <form class="user" action="" method="post">
                     <div class="form-group">
